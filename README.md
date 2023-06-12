@@ -1,16 +1,16 @@
-![AGES](images/ages.jpeg)
-![AGES](images/ages.jpeg)
-![BMI](images/bmi.jpeg)
-![RACE](images/race.jpeg)
-![PARITY](images/parity.jpeg)
-![RACE](images/parity-race.jpeg)
-![RACE](images/parity-breastfeeding.jpeg)
-![RACE](images/correlation-matrix.jpeg)
-![RACE](images/bmi-race.jpeg)
-![RACE](images/bmi-muac.jpeg)
-![RACE](images/hba1c-rg.jpeg)
-![RACE](images/creatinine80.jpeg)
-![RACE](images/egfr90.jpeg)
-![RACE](images/creatinine-race.jpeg)
-![RACE](images/egfr-race.jpeg)
-![RACE](images/egfr-acr.jpeg)
+<img src="images/ages.jpeg"  width="250">
+<img src="images/ages.jpeg"  width="250">
+<img src="images/bmi.jpeg"  width="250">
+<img src="images/race.jpeg"  width="250">
+<img src="images/parity.jpeg"  width="250">
+<img src="images/parity-race.jpeg"  width="250">
+<img src="images/parity-breastfeeding.jpeg"  width="250">
+<img src="images/correlation-matrix.jpeg"  width="250">
+<img src="images/bmi-race.jpeg"  width="250">
+<img src="images/bmi-muac.jpeg"  width="250">
+<img src="images/hba1c-rg.jpeg"  width="250">
+<img src="images/creatinine80.jpeg"  width="250">
+<img src="images/egfr90.jpeg"  width="250">
+<img src="images/creatinine-race.jpeg"  width="250">
+<img src="images/egfr-race.jpeg"  width="250">
+<img src="images/egfr-acr.jpeg"  width="250">
