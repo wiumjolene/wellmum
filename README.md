@@ -1,7 +1,5 @@
-<img src="images/ages.jpeg"  width="250">
-<img src="images/ages.jpeg"  width="250">
-<img src="images/bmi.jpeg"  width="250">
-<img src="images/race.jpeg"  width="250">
+<img src="images/ages.jpeg"  width="250"><img src="images/ages.jpeg"  width="250">
+<img src="images/bmi.jpeg"  width="250"><img src="images/race.jpeg"  width="250">
 <img src="images/parity.jpeg"  width="250">
 <img src="images/parity-race.jpeg"  width="250">
 <img src="images/parity-breastfeeding.jpeg"  width="250">
