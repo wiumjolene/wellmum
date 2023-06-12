@@ -13,3 +13,9 @@
 <img src="images/egfr-race.jpeg"  width="250">
 <img src="images/egfr-acr.jpeg"  width="250">
 <img src="images/hb1ac.jpeg"  width="250">
+<img src="images/hb1ac.jpeg"  width="250">
+<img src="images/hb-race.jpeg"  width="250">
+<img src="images/hb-parity.jpeg"  width="250">
+<img src="images/hb-egfr.jpeg"  width="250">
+<img src="images/hb-HbA1C.jpeg"  width="250">
+<img src="images/HbA1C-breastfeeding.jpeg"  width="250">
