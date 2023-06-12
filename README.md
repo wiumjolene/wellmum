@@ -12,3 +12,4 @@
 <img src="images/creatinine-race.jpeg"  width="250">
 <img src="images/egfr-race.jpeg"  width="250">
 <img src="images/egfr-acr.jpeg"  width="250">
+<img src="images/hb1ac.jpeg"  width="250">
