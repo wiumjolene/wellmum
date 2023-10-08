@@ -19,3 +19,4 @@
 <img src="images/hb-egfr.jpeg"  width="250">
 <img src="images/hb-HbA1C.jpeg"  width="250">
 <img src="images/HbA1C-breastfeeding.jpeg"  width="250">
+<img src="images/hba1c-alt.jpeg"  width="250">
