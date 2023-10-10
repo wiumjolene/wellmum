@@ -7,13 +7,14 @@ from src.utils import colours
 #from src.utils.connect import DatabaseModelsClass
 from src.data.get_data import GetDataTemplate
 from src.visualization import visualize
+import os
 
 
 class MakeCharts:
     """ Class to make features of income statement. """
     logger = logging.getLogger(f"{__name__}.MakeFeatures")
 
-    def make_chart_bar(self, df, tracevar, xvar, yvar, title, barcol=True):
+    def make_chart_bar(self, df, tracevar, xvar, yvar, title, popcount, barcol=True):
         xaxes = []
         yaxes = []
         names = []
@@ -43,7 +44,8 @@ class MakeCharts:
             'yaxis'   : {'name': yvar, 'uom': config.UOM[yvar]},
             'xaxis'   : {'name': xvar, 'uom': config.UOM[xvar]},
             'heading' : title,
-            'popcount': len(df),
+            'popcount': popcount,
+            'showlegend': True
         }   
 
         
@@ -86,7 +88,7 @@ class MakeCharts:
 
         return fig
 
-    def make_chart_box(self, df, tracevar, yvar, title):
+    def make_chart_box(self, df, tracevar, yvar, title, popcount):
 
         yaxes = []
         names = []
@@ -110,7 +112,7 @@ class MakeCharts:
         metadata = {
             'yaxis'   : {'name': yvar, 'uom': config.UOM[yvar]},
             'heading' : title,
-            'popcount': len(df),
+            'popcount': popcount,
         }   
 
         viz = visualize.VizBox()
@@ -118,7 +120,8 @@ class MakeCharts:
 
         return fig
 
-    def make_chart_splom(self, df, tracevar, dimlist, title):
+    def make_chart_splom(self, df, tracevar, dimlist, title, colsdic):
+        print(colsdic)
 
         #yaxes = []
         dimensions = []
@@ -127,6 +130,7 @@ class MakeCharts:
         markers = []
 
         for count, var in enumerate(df[f"{tracevar}"].unique()):
+            print(var)
             dft = df[df[f"{tracevar}"] == var]
 
             _d = []
@@ -137,7 +141,10 @@ class MakeCharts:
                 )
             dimensions.append(_d)
             names.append(var)
-            marker=dict(color=colours.COLOURS[((count + 1 ) * 10)],
+            # marker=dict(color=colours.COLOURS[((count + 1 ) * 10)],
+            #             showscale=False,  # colors encode categorical variables
+            #             line_color='white', line_width=0.5)
+            marker=dict(color=colsdic[var],
                         showscale=False,  # colors encode categorical variables
                         line_color='white', line_width=0.5)
             markers.append(marker)
@@ -169,6 +176,33 @@ class MakeCharts:
         fig = viz.heatmap(df_hm)
         return fig
 
+    def make_chart_sankey(self, df):
+
+        df_sankey  = df[['Hb', 'Hb Term']]
+
+        a_a = np.sum(df_sankey['Hb'] <= 120)
+        a_n_a = np.sum(df_sankey['Hb'] > 120)
+        a_nan = df_sankey['Hb'].isnull().sum()
+        #print(f"{a_a}-{a_n_a}-{a_nan}")
+
+        df_sankey2 = df_sankey[df_sankey['Hb'] <= 120]
+        b_a = np.sum(df_sankey2['Hb Term'] <= 120)
+        b_n_a = np.sum(df_sankey2['Hb Term'] > 120)
+        b_nan = df_sankey2['Hb Term'].isnull().sum()
+        #print(f"{b_a}-{b_n_a}-{b_nan}")
+
+        #labels = ['Patients',  
+        #          'Hb <= 120', 'Hb > 120', 'Not measured',
+        #          'Anemic at Term', 'Cleared', 'Not measured']
+
+        #source=[0, 0, 0, 1, 1, 1],
+        #target=[1, 2, 3, 4, 5, 6],
+        #value=[a_a, a_n_a, a_nan, b_a, b_n_a, b_nan]  
+
+        #viz = visualize.VizSankey()
+        #fig = viz.sankey(labels, source, target, value)
+        return fig
+
     def age_bar(self, dft):
         df = dft[['Age', 'Race']].reset_index(drop=True)
         df.loc[df['Age'] < 35, 'Age Category'] = '< 35'
@@ -186,7 +220,7 @@ class MakeCharts:
         age = age.sort_values(by=['Sort'])
         age['Percentage'] = round(age['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(age, 'Race', 'Age Category', 'Percentage', 'Age Distribution')
+        fig = self.make_chart_bar(age, 'Race', 'Age Category', 'Percentage', 'Age Distribution', len(df))
 
         return fig
     
@@ -195,7 +229,7 @@ class MakeCharts:
         race = race.sort_values(by=['Counts'], ascending=False)
         race['Percentage'] = round(race['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(race, 'Race', 'Race', 'Percentage', 'Race Distribution')
+        fig = self.make_chart_bar(race, 'Race', 'Race', 'Percentage', 'Race Distribution', len(df))
 
         return fig
     
@@ -206,7 +240,7 @@ class MakeCharts:
         par['Parity'] = par['Parity'].astype(str)
 
         fig = self.make_chart_bar(par, 'Parity', 'Parity', 'Percentage', 'Parity Distribution', 
-                                  barcol=False)
+                                  len(df), barcol=False)
 
         return fig
     
@@ -230,7 +264,7 @@ class MakeCharts:
         dft = dft.sort_values(by=['Sort'])
         dft['Percentage'] = round(dft['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(dft, 'Race', 'BMI Category', 'Percentage', 'BMI Distribution')
+        fig = self.make_chart_bar(dft, 'Race', 'BMI Category', 'Percentage', 'BMI Distribution', len(df))
 
         return fig
     
@@ -242,7 +276,7 @@ class MakeCharts:
 
         dfchart = pd.concat([dfcats, dfall])
 
-        fig = self.make_chart_box(dfchart, 'Race', 'BMI', 'BMI Spread by Race')
+        fig = self.make_chart_box(dfchart, 'Race', 'BMI', 'BMI Spread by Race', len(df))
         
         return fig
     
@@ -261,7 +295,7 @@ class MakeCharts:
         dft = dft.sort_values(by=['Sort'])
         dft['Percentage'] = round(dft['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(dft, 'Race', 'HbA1C Category', 'Percentage', 'HbA1C Distribution by Race')
+        fig = self.make_chart_bar(dft, 'Race', 'HbA1C Category', 'Percentage', 'HbA1C Distribution by Race', len(df))
 
         return fig
 
@@ -280,19 +314,27 @@ class MakeCharts:
         dft = dft.sort_values(by=['Sort'])
         dft['Percentage'] = round(dft['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(dft, 'HbA1C Category', 'HbA1C Category', 'Percentage', 'HbA1C Distribution', barcol=False)
+        fig = self.make_chart_bar(dft, 'HbA1C Category', 'HbA1C Category', 'Percentage', 'HbA1C Distribution', len(df), barcol=False)
 
         return fig
 
     def hba1c_splom(self, df):
-        cols = ['HbA1C', 'RandomGlucose', 'eGFR', 'Age', 'Hb', 'ALT', 'Creatinine', 'ACR']
+        cols = ['HbA1C', 'eGFR', 'Age', 'Hb', 'ALT', 'ACR', 'MAP']
         dfcat = df[cols].reset_index(drop=True)
+        dfcat = dfcat
 
         dfcat.loc[dfcat['HbA1C'] < 38, 'HbA1C Category'] = '< 38'
         dfcat.loc[(dfcat['HbA1C'] >= 38) & (dfcat['HbA1C'] < 47), 'HbA1C Category'] = '39 - 47'
         dfcat.loc[dfcat['HbA1C'] >= 47, 'HbA1C Category'] = '> 48'
 
-        fig = self.make_chart_splom(dfcat, 'HbA1C Category', cols, 'HbA1C Relationships')
+        colsdic = {
+            '< 38': colours.COLOURS[10],
+            '39 - 47': colours.COLOURS[40],
+            '> 48': colours.COLOURS[100]
+
+        }
+
+        fig = self.make_chart_splom(dfcat, 'HbA1C Category', cols, 'HbA1C Relationships', colsdic)
 
         fig2 = self.make_chart_heatmap(df, cols)
 
@@ -306,7 +348,7 @@ class MakeCharts:
 
         dfchart = pd.concat([dfcats, dfall])
 
-        fig = self.make_chart_box(dfchart, 'Race', 'HbA1C', 'HbA1C Spread by Race')
+        fig = self.make_chart_box(dfchart, 'Race', 'HbA1C', 'HbA1C Spread by Race', len(df))
         
         return fig
    
@@ -329,7 +371,7 @@ class MakeCharts:
         dft = dft.sort_values(by=['Sort'])
         dft['Percentage'] = round(dft['Counts'] / len(df) * 100, 2)
 
-        fig = self.make_chart_bar(dft, 'Hb Category', 'Hb Category', 'Percentage', 'Hb Category Distribution', barcol=False)
+        fig = self.make_chart_bar(dft, 'Hb Category', 'Hb Category', 'Percentage', 'Hb Category Distribution', len(df), barcol=False)
 
         return fig
 
@@ -341,19 +383,25 @@ class MakeCharts:
 
         dfchart = pd.concat([dfcats, dfall])
 
-        fig = self.make_chart_box(dfchart, 'Race', 'Hb', 'Hb Spread by Race')
+        fig = self.make_chart_box(dfchart, 'Race', 'Hb', 'Hb Spread by Race', len(df))
         
         return fig
    
     def egfr_splom(self, df):
-        cols = ['HbA1C', 'RandomGlucose', 'eGFR', 'Age', 'Hb', 'ALT', 'Creatinine', 'ACR']
+        cols = ['HbA1C', 'eGFR', 'Age', 'Hb', 'ALT', 'ACR']
         dfcat = df[cols].reset_index(drop=True)
 
         dfcat.loc[dfcat['eGFR'] <= 90, 'eGFR Category'] = '<= 90'
         dfcat.loc[dfcat['eGFR'] > 90,  'eGFR Category'] = '> 90'
 
+        colsdic = {
+            '> 90': colours.COLOURS[10],
+            '<= 90': colours.COLOURS[100]
+
+        }
+
         #dimlist = cols.remove('Id')
-        fig = self.make_chart_splom(dfcat, 'eGFR Category', cols, 'eGFR Relationships')
+        fig = self.make_chart_splom(dfcat, 'eGFR Category', cols, 'eGFR Relationships', colsdic)
 
         return fig
 
@@ -365,7 +413,7 @@ class MakeCharts:
 
         dfchart = pd.concat([dfcats, dfall])
 
-        fig = self.make_chart_box(dfchart, 'Race', 'eGFR', 'eGFR Spread by Race')
+        fig = self.make_chart_box(dfchart, 'Race', 'eGFR', 'eGFR Spread by Race', len(df))
         
         return fig
   
@@ -384,15 +432,79 @@ class MakeCharts:
         return fig
 
     def syst_bmi_scatter(self, df):
-        dfc = df[['Systolic', 'Diastolic', 'BMI', 'eGFR']]
+        dfc = df[['Systolic', 'Diastolic', 'BMI', 'eGFR', 'MAP']]
         dfc['Cat'] = 'All'
 
-        fig = self.make_chart_scatter(dfc, 'Cat', 'Systolic', 'BMI', 'Systolic vs BMI')
-        fig = self.make_chart_scatter(dfc, 'Cat', 'Diastolic', 'BMI', 'Diastolic vs BMI')
-        fig = self.make_chart_scatter(dfc, 'Cat', 'Systolic', 'eGFR', 'Systolic vs eGFR')
-        fig = self.make_chart_scatter(dfc, 'Cat', 'Diastolic', 'eGFR', 'Diastolic vs eGFR')
+        #fig = self.make_chart_scatter(dfc, 'Cat', 'Systolic', 'BMI', 'Systolic vs BMI')
+        fig = self.make_chart_scatter(dfc, 'Cat', 'MAP', 'BMI', 'MAP vs BMI')
+        fig = self.make_chart_scatter(dfc, 'Cat', 'MAP', 'eGFR', 'MAP vs eGFR')
+        #fig = self.make_chart_scatter(dfc, 'Cat', 'Diastolic', 'eGFR', 'Diastolic vs eGFR')
 
         return fig
+
+    def anemia_cascade(self, df):
+
+        df_c  = df[['Hb', 'Hb Term']]
+
+        a_a = np.sum(df_c['Hb'] <= 120)
+        a_n_a = np.sum(df_c['Hb'] > 120)
+        a_nan = df_c['Hb'].isnull().sum()
+
+        df_c2 = df_c[df_c['Hb'] <= 120]
+        b_a = np.sum(df_c2['Hb Term'] <= 105)
+        b_n_a = np.sum(df_c2['Hb Term'] > 105)
+        b_nan = df_c2['Hb Term'].isnull().sum()
+
+        data = [['Patients', '1', len(df), f'Patients<br>({len(df)})', colours.COLOURS[10]],
+                ['Visit 1', '3', a_n_a, f'> 120<br>({a_n_a})', colours.COLOURS[20]],
+                ['Visit 1', '2', a_nan, f'Not measured<br>({a_nan})', '#c4c4c4'],
+                ['Visit 1', '1', a_a, f'<= 120<br>({a_a})', colours.COLOURS[100]],
+                ['Term', '2', a_nan + a_n_a, f'Cleared<br>({a_nan + a_n_a})', colours.PLOTBACKGROUND],
+                ['Term', '3', b_nan, f'Not measured ({b_nan})','#c4c4c4'],
+                ['Term', '1', b_a, f'<= 105 ({b_a})', colours.COLOURS[100]],
+                ['Term', '1', b_n_a, f'> 105<br>({b_n_a})', colours.COLOURS[20]]]
+        
+        dfm = pd.DataFrame(data=data, columns=['Bars', 'Hb', 'Count', 'Text', 'Colour'])
+
+        xaxes = []
+        yaxes = []
+        names = []
+        text = []
+        cols = []
+
+        for count, var in enumerate(dfm['Hb'].unique()):
+            dft = dfm[dfm['Hb'] == var]
+            xaxes.append(list(dft['Bars']))
+            yaxes.append(list(dft['Count']))
+            names.append(var)
+            text.append(list(dft['Text']))
+            cols.append(list(dft['Colour']))
+
+
+        data = {
+            'xaxes'   : xaxes,
+            'yaxes'   : yaxes,
+            'names'   : names,
+            'text'    : text,
+            'colours' : cols
+        }
+
+        metadata = {
+            'yaxis'   : {'name': 'Count', 'uom': config.UOM['Count']},
+            'xaxis'   : {'name': '', 'uom': ''},
+            'heading' : 'Cascade of Anemic Patients at First Visit and Term',
+            'popcount': len(df),
+            'showlegend': False
+        }   
+
+        
+        viz = visualize.VizBar()
+        fig = viz.verticalbar(data, metadata)
+
+
+        #self.make_chart_bar(dft, 'Hb', 'Bars', 'Count', 'title', len(df))
+
+        return 
 
 
 class MakeAnalysis:
@@ -458,6 +570,8 @@ class MakeAnalysis:
         # Anemia
         ## Hb
         #########################
+        #self.mc.make_chart_sankey(df)
+        self.mc.anemia_cascade(df)
 
         ## Hb
         self.mc.hb_bar(df)
@@ -505,10 +619,24 @@ class MakeAnalysis:
         self.mc.bmi_muac_scatter(df)
 
         ## MUAC vs BMI
-        self.mc.hba1c_randgluc_scatter(df)
+        #self.mc.hba1c_randgluc_scatter(df)
 
         ## Systolic vs BMI
         self.mc.syst_bmi_scatter(df)
 
+        return
+    
+    def make_readme(self):
+        files = os.listdir(os.path.join(config.FIGFOLDER))
+        f = open('file.md', 'w')
+
+        for file in files:
+
+            fig = f"""<img src="images/202310/{file}"  width="300">
+            """
+            f.write(fig)
+            #print(fig)
+
+        f.close()
 
         return

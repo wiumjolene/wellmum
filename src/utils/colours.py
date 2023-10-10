@@ -22,6 +22,18 @@ COLOURS = {
     100: '#4b6260',
 }
 
+COLOURS = {
+    10: '#172207',
+    20: '#32471E',
+    30: '#3E412A',
+    40: '#555A44',
+    50: '#7D826D',
+    60: '#CAC9C7',
+    70: '#CAC9C7',
+    80: '#CAC9C7',
+    100: '#b7410e',
+}
+
 PLOTBACKGROUND = '#F6F8FC'
 PAPERBACKGROUND = 'white'
 GRIDCOLOUR = 'lightgrey'

@@ -20,7 +20,7 @@ class GetDataTemplate:
     def get_excel_WELLMUM(self):
         self.logger.debug(f"- get_excel_WELLMUM")
 
-        path = os.path.join(self.DATA_FOLDER, 'raw', 'WELLMUM_20231008.xlsx')
+        path = os.path.join(self.DATA_FOLDER, 'raw', 'WELLMUM_20231008_v0.2.xlsx')
         df_import = pd.read_excel(path, 'Sheet2', engine='openpyxl')
 
         df = df_import[df_import['Remove'] != 1].reset_index(drop=True)
@@ -31,6 +31,7 @@ class GetDataTemplate:
                                 'random glucose': 'RandomGlucose',
                                 'AGE': 'Age',
                                 'Weight (kg)': 'Weight',
+                                'Hb at delivery ': 'Hb Term',
                                 'Mid upper arm circumstance ': 'MUAC',
                                 'ID ': 'Id',
                                 'EPDS score':'EPDS',
@@ -43,19 +44,18 @@ class GetDataTemplate:
                                 
                                 })
 
-        # # Select subset of columns
-        cols = ['Id', 'Age', 'Gravidity', 'Parity', 'BMI', 'Weight', 'Creatinine',
-                'HbA1C', 'ACR', 'GDMControl', 'Race', 'RandomGlucose', 'eGFR', 'ALT',
-                'MUAC', 'Hb', 'MDOB', 'Breastfeeding', 'EPDS', 'Systolic', 'Diastolic']
         
-        df = df[cols]
+        # Calculate Mean BP
+        df['MAP'] = ((2 * df['Diastolic']) + df['Systolic'])/3
+
 
         # Clean Race
         df['Race'] = df['Race'].str.upper()
         df['Race'] = df['Race'].str.strip()
-        #df.loc[(df['Race'] == 'ASIAN'), 'Race'] = 'ASIAN'
-        #df.loc[(df['Race'] == 'EAST ASIAN'), 'Race'] = 'ASIAN'
-        #df.loc[(df['Race'] == 'SOUTH ASIAN'), 'Race'] = 'ASIAN'
+        df.loc[(df['Race'] == 'ASIAN'), 'Race'] = 'ASIAN EAST'
+        df.loc[(df['Race'] == 'EAST ASIAN'), 'Race'] = 'ASIAN EAST'
+        df.loc[(df['Race'] == 'SOUTH ASIAN'), 'Race'] = 'ASIAN SOUTH'
+        df.loc[(df['Race'] == 'MIED'), 'Race'] = 'MIXED'
 
         # Clean 'Breastfeeding'
         df['Breastfeeding'] = df['Breastfeeding'].str.upper()
@@ -83,6 +83,11 @@ class GetDataTemplate:
 
         df['eGFR'] = 141 * df['MIN'] * df['MAX'] * df['AGEADJ'] * 1.012 * df['b']
 
+        # # Select subset of columns
+        cols = ['Id', 'Age', 'Gravidity', 'Parity', 'BMI', 'Weight',
+                'HbA1C', 'ACR', 'GDMControl', 'Race', 'eGFR', 'ALT',
+                'MUAC', 'Hb', 'Hb Term', 'MDOB', 'Breastfeeding', 'EPDS', 'Systolic', 
+                'Diastolic', 'MAP']
         df = df[cols]
 
         print(f"""Data consits of {len(df)} rows after cleaning. 
@@ -90,49 +95,3 @@ class GetDataTemplate:
             """)
 
         return df
-
-    def get_sql_DATA(self):
-        self.logger.debug(f"- get_sql_DATA")
-
-        query_str = f""" 
-            SELECT * FROM DATABASE.TABLE;
-        """
-        df = self.database_instance.select_query(query_str=query_str)
-
-        return df
-
-    def get_api_DATA(self, dataframe):
-        self.logger.debug(f"- get_api_DATA")
-
-        url = f""" URL FOR API"""
-        response = requests.get(url)
-
-        if response.ok:
-            response = response.json()
-
-            if dataframe:
-                response = pd.DataFrame(response)
-
-        else:
-            self.logger.info(f"- get_api_DATA response not OK")
-            exit()
-
-        return response
-
-    def get_api_EXAMPLE(self, dataframe):
-        self.logger.debug(f"- get_api_DATA")
-
-        url = f"""https://api.nal.usda.gov/fdc/v1/foods/list?api_key=KEY"""
-        response = requests.get(url)
-
-        if response.ok:
-            response = response.json()
-
-            if dataframe:
-                response = pd.DataFrame(response)
-
-        else:
-            self.logger.info(f"- get_api_DATA response not OK")
-            exit()
-
-        return response

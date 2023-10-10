@@ -1,22 +1,19 @@
-<img src="images/ages.jpeg"  width="250"><img src="images/ages.jpeg"  width="250">
-<img src="images/bmi.jpeg"  width="250"><img src="images/race.jpeg"  width="250">
-<img src="images/parity.jpeg"  width="250">
-<img src="images/parity-race.jpeg"  width="250">
-<img src="images/parity-breastfeeding.jpeg"  width="250">
-<img src="images/correlation-matrix.jpeg"  width="250">
-<img src="images/bmi-race.jpeg"  width="250">
-<img src="images/bmi-muac.jpeg"  width="250">
-<img src="images/hba1c-rg.jpeg"  width="250">
-<img src="images/creatinine80.jpeg"  width="250">
-<img src="images/egfr90.jpeg"  width="250">
-<img src="images/creatinine-race.jpeg"  width="250">
-<img src="images/egfr-race.jpeg"  width="250">
-<img src="images/egfr-acr.jpeg"  width="250">
-<img src="images/hb1ac.jpeg"  width="250">
-<img src="images/hb1ac.jpeg"  width="250">
-<img src="images/hb-race.jpeg"  width="250">
-<img src="images/hb-parity.jpeg"  width="250">
-<img src="images/hb-egfr.jpeg"  width="250">
-<img src="images/hb-HbA1C.jpeg"  width="250">
-<img src="images/HbA1C-breastfeeding.jpeg"  width="250">
-<img src="images/hba1c-alt.jpeg"  width="250">
+<img src="images/202310/Age Distribution.jpeg"  width="300">
+            <img src="images/202310/BMI Distribution.jpeg"  width="300">
+            <img src="images/202310/BMI Spread by Race.jpeg"  width="300">
+            <img src="images/202310/BMI vs MUAC.jpeg"  width="300">
+            <img src="images/202310/Cascade of Anemic Patients at First Visit and Term.jpeg"  width="300">
+            <img src="images/202310/eGFR Relationships.jpeg"  width="300">
+            <img src="images/202310/eGFR Spread by Race.jpeg"  width="300">
+            <img src="images/202310/Hb Category Distribution.jpeg"  width="300">
+            <img src="images/202310/Hb Spread by Race.jpeg"  width="300">
+            <img src="images/202310/HbA1C Distribution by Race.jpeg"  width="300">
+            <img src="images/202310/HbA1C Distribution.jpeg"  width="300">
+            <img src="images/202310/HbA1C Relationships.jpeg"  width="300">
+            <img src="images/202310/HbA1C Spread by Race.jpeg"  width="300">
+            <img src="images/202310/heatmap.jpeg"  width="300">
+            <img src="images/202310/MAP vs BMI.jpeg"  width="300">
+            <img src="images/202310/MAP vs eGFR.jpeg"  width="300">
+            <img src="images/202310/Parity Distribution.jpeg"  width="300">
+            <img src="images/202310/Race Distribution.jpeg"  width="300">
+            
