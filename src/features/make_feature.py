@@ -632,8 +632,7 @@ class MakeAnalysis:
 
         for file in files:
 
-            fig = f"""<img src="images/202310/{file}"  width="250">
-            """
+            fig = f"""<img src="images/202310/{file}"  width="250">"""
             f.write(fig)
             #print(fig)
 
