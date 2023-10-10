@@ -44,10 +44,14 @@ class GetDataTemplate:
                                 
                                 })
 
-        
+        # Dates
+        start_date = pd.to_datetime(df['Neonatal date of birth'])
+        end_date = pd.to_datetime(df['DATE'])
+        diff = end_date - start_date
+        df['Days Post Partum'] = diff.dt.days
+
         # Calculate Mean BP
         df['MAP'] = ((2 * df['Diastolic']) + df['Systolic'])/3
-
 
         # Clean Race
         df['Race'] = df['Race'].str.upper()
@@ -87,7 +91,7 @@ class GetDataTemplate:
         cols = ['Id', 'Age', 'Gravidity', 'Parity', 'BMI', 'Weight',
                 'HbA1C', 'ACR', 'GDMControl', 'Race', 'eGFR', 'ALT',
                 'MUAC', 'Hb', 'Hb Term', 'MDOB', 'Breastfeeding', 'EPDS', 'Systolic', 
-                'Diastolic', 'MAP']
+                'Diastolic', 'MAP', 'Days Post Partum']
         df = df[cols]
 
         print(f"""Data consits of {len(df)} rows after cleaning. 
@@ -95,3 +99,36 @@ class GetDataTemplate:
             """)
 
         return df
+
+
+    def get_excel_EPDS(self):
+        self.logger.debug(f"- get_excel_WELLMUM")
+
+        path = os.path.join(self.DATA_FOLDER, 'raw', 'WELLMUM_20231008_v0.2.xlsx')
+        df_import = pd.read_excel(path, 'Sheet2', engine='openpyxl')
+
+        df = df_import[df_import['Remove'] != 1].reset_index(drop=True)
+
+        # # Select subset of columns
+        cols = ['ID ',
+                'I have been able to laugh and see the funny side of things ',
+                'i have looked forward with enjoyment to things',
+                'I have blamed myself unnecessary if thigs went wrong ',
+                'I have been worried or anxious for no good reason',
+                'I have felt scared or panicky for no good reason at all',
+                'Things have been getting on top of me',
+                'I have been so unhappy that I have had difficulty sleeping',
+                'I have felt sad or miserable',
+                'I have been so unhappy that I have been crying',
+                'The thought of harming myself has occurred to me',]
+        df = df[cols]
+
+        df2 = pd.melt(df, id_vars='ID ', var_name='Question', value_name='EPDS')
+
+        print(f"""Data consits of {len(df2)} rows after cleaning. 
+        * {len(df_import)-len(df2)} rows have been excluded.
+            """)
+
+        return df2
+
+

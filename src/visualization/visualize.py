@@ -200,7 +200,60 @@ class VizBox:
         figpath = os.path.join(config.FIGFOLDER, f"{metadata['heading']}.jpeg")
         fig.write_image(figpath)
         return fig
-    
+
+    def distrboxplot_horizontal(self, data, metadata):
+        """ 
+        data = {
+                'yaxes': [[y,y,y,y,y],[y,y,y,y,y],[y,y,y,y,y],[y,y,y,y,y]],
+                'names': ['name','name','name','name'],
+                'colours': [colour,colour,colour,colour]
+        }
+        metadata = {
+            'yaxis':{'name':'name', 'uom':'uom'},
+            'xaxis':{'name':'name', 'uom':'uom'},
+            'heading':'heading',
+            'popcount':'popcount',
+            'mode':'mode'
+        }    
+        """
+        self.logger.debug(f"- scatterplot")
+
+        fig = go.Figure()
+
+        # Add traces
+        for count, vals in enumerate(data['names']):
+
+            fig.add_trace(go.Box(x=data['yaxes'][count],
+                                    marker_color=data['colours'][count],
+                                    name=vals,
+                                    notched=True,
+                                    jitter=0.3,
+                                    pointpos=-1.8,
+                                    boxpoints=False,  # represent all points
+                                        )
+                        )
+
+        fig.update_layout(
+            title=go.layout.Title(
+                text=f"{metadata['heading']}<br><sup><i>(n={metadata['popcount']})</i></sup>",
+                #text=f"{metadata['heading']}",
+                xref="paper",
+                x=0
+            ),
+            showlegend=False,
+            xaxis=go.layout.XAxis(
+                title=go.layout.xaxis.Title(
+                    text=f"{metadata['yaxis']['name']}<br><sup><i>{metadata['yaxis']['uom']}</i></sup>"
+                ),
+                gridcolor=colours.GRIDCOLOUR
+            ),
+            paper_bgcolor = colours.PAPERBACKGROUND,
+            plot_bgcolor=colours.PLOTBACKGROUND,
+        )
+        fig.show()
+        figpath = os.path.join(config.FIGFOLDER, f"{metadata['heading']}.jpeg")
+        fig.write_image(figpath)
+        return fig 
 
 class VizSplom:
     logger = logging.getLogger(f"{__name__}.VizSplom")
@@ -300,7 +353,6 @@ class VizSplom:
         figpath = os.path.join(config.FIGFOLDER, f"heatmap.jpeg")
         fig.write_image(figpath)
         return fig
-
 
 
 class VizSankey:

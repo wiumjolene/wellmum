@@ -62,11 +62,11 @@ class MakeCharts:
         cols = []
 
         for count, var in enumerate(df[f"{tracevar}"].unique()):
-            dft = df[df[f"{tracevar}"] == var]
+            dft = df[df[f"{tracevar}"] == var].reset_index(drop=True)
             xaxes.append(list(dft[f"{xvar}"]))
             yaxes.append(list(dft[f"{yvar}"]))
             names.append(var)
-            cols.append(colours.COLOURS[((count + 1) * 10)])
+            cols.append(list(dft['Color']))
 
         data = {
             'xaxes'   : xaxes,
@@ -88,7 +88,7 @@ class MakeCharts:
 
         return fig
 
-    def make_chart_box(self, df, tracevar, yvar, title, popcount):
+    def make_chart_box(self, df, tracevar, yvar, title, popcount, vertical=True):
 
         yaxes = []
         names = []
@@ -116,12 +116,16 @@ class MakeCharts:
         }   
 
         viz = visualize.VizBox()
-        fig = viz.distrboxplot(data, metadata)
+
+        if vertical: 
+            fig = viz.distrboxplot(data, metadata)
+
+        else:
+            fig = viz.distrboxplot_horizontal(data, metadata)
 
         return fig
 
     def make_chart_splom(self, df, tracevar, dimlist, title, colsdic):
-        print(colsdic)
 
         #yaxes = []
         dimensions = []
@@ -418,22 +422,25 @@ class MakeCharts:
         return fig
   
     def bmi_muac_scatter(self, df):
-        dfc = df[['BMI', 'MUAC', 'Race']]
+        dfc = df[['BMI', 'MUAC', 'Race']].reset_index(drop=True)
+        dfc['Color'] = colours.COLOURS[20]
 
         fig = self.make_chart_scatter(dfc, 'Race', 'BMI', 'MUAC', 'BMI vs MUAC')
         
         return fig
 
     def hba1c_randgluc_scatter(self, df):
-        dfc = df[['HbA1C', 'RandomGlucose', 'Race']]
+        dfc = df[['HbA1C', 'RandomGlucose', 'Race']].reset_index(drop=True)
+        dfc['Color'] = colours.COLOURS[20]
 
         fig = self.make_chart_scatter(dfc, 'Race', 'HbA1C', 'RandomGlucose', 'HbA1C vs Random Glucose')
         
         return fig
 
     def syst_bmi_scatter(self, df):
-        dfc = df[['Systolic', 'Diastolic', 'BMI', 'eGFR', 'MAP']]
+        dfc = df[['Systolic', 'Diastolic', 'BMI', 'eGFR', 'MAP']].reset_index(drop=True)
         dfc['Cat'] = 'All'
+        dfc['Color'] = colours.COLOURS[20]
 
         #fig = self.make_chart_scatter(dfc, 'Cat', 'Systolic', 'BMI', 'Systolic vs BMI')
         fig = self.make_chart_scatter(dfc, 'Cat', 'MAP', 'BMI', 'MAP vs BMI')
@@ -505,6 +512,18 @@ class MakeCharts:
         #self.make_chart_bar(dft, 'Hb', 'Bars', 'Count', 'title', len(df))
 
         return 
+
+    def epds_days_scatter(self, df):
+        dfc = df[['Days Post Partum', 'EPDS']].reset_index(drop=True)
+        dfc.loc[dfc['EPDS'] > 10, 'Category'] = 'EPDS > 10'
+        dfc.loc[dfc['EPDS'] <= 10, 'Category'] = 'EPDS <= 10'
+
+        dfc.loc[dfc['EPDS'] > 10, 'Color'] = colours.COLOURS[100]
+        dfc.loc[dfc['EPDS'] <= 10, 'Color'] = colours.COLOURS[20]
+
+        fig = self.make_chart_scatter(dfc, 'Category', 'Days Post Partum', 'EPDS', 'EPDS vs Days Post Partum')
+        
+        return fig
 
 
 class MakeAnalysis:
@@ -625,7 +644,19 @@ class MakeAnalysis:
         self.mc.syst_bmi_scatter(df)
 
         return
-    
+
+    def disease_postpartumdepress(self):
+
+        df=self.gt.get_excel_WELLMUM()
+
+        self.mc.epds_days_scatter(df)
+
+        df=self.gt.get_excel_EPDS()
+        fig = self.mc.make_chart_box(df, 'Question', 'EPDS', 'EPDS Scores', int(len(df)/10), False)
+
+
+        return
+
     def make_readme(self):
         files = os.listdir(os.path.join(config.FIGFOLDER))
         f = open('readme.md', 'w')

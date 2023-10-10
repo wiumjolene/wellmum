@@ -31,6 +31,7 @@ UOM = {
     'MAP': 'mmHg',
     'Count': 'number of patients',
     'Bars': '',
+    'Days Post Partum': 'Days',
 }
 
 FIGFOLDER = os.path.join(ROOTDIR, "images", "202310")
