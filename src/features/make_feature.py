@@ -628,11 +628,11 @@ class MakeAnalysis:
     
     def make_readme(self):
         files = os.listdir(os.path.join(config.FIGFOLDER))
-        f = open('file.md', 'w')
+        f = open('readme.md', 'w')
 
         for file in files:
 
-            fig = f"""<img src="images/202310/{file}"  width="300">
+            fig = f"""<img src="images/202310/{file}"  width="250">
             """
             f.write(fig)
             #print(fig)
